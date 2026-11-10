@@ -9,11 +9,23 @@ import apiRoutes from "./routes/api.js";
 
 const app = express();
 
-// Trust first proxy (Nginx) so req.ip reflects the real client IP
-app.set("trust proxy", 1);
+// Hop chain in production: Cloudflare -> host Nginx -> frontend Nginx -> Express.
+// The host Nginx restores the visitor IP from Cloudflare's CF-Connecting-IP
+// (realip module) and sets X-Forwarded-For to it, overwriting any client value.
+// The frontend Nginx appends the host Nginx address it sees. Trusting two
+// proxies (frontend Nginx, host Nginx) makes req.ip the visitor's IP.
+app.set("trust proxy", 2);
 
-// Security headers
-app.use(helmet());
+// Security headers. X-Frame-Options, X-Content-Type-Options and Referrer-Policy
+// are set once for every response by the frontend Nginx
+// (frontend/security-headers.conf), so helmet does not send them.
+app.use(
+  helmet({
+    xFrameOptions: false,
+    xContentTypeOptions: false,
+    referrerPolicy: false,
+  })
+);
 
 // CORS — restrict to known origin in production
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
