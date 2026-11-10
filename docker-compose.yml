@@ -5,7 +5,7 @@ services:
       - "127.0.0.1:3000:80"
     restart: unless-stopped
     environment:
-      - PROXY_TOKEN=${PROXY_TOKEN}
+      - PROXY_TOKEN=${PROXY_TOKEN:?PROXY_TOKEN must be set in .env}
     depends_on:
       - backend
     deploy:
@@ -18,9 +18,9 @@ services:
     build: ./backend
     restart: unless-stopped
     environment:
-      - MONGO_URL=${MONGO_URL:-mongodb://admin:admin@mongo:27017/techrelative?authSource=admin}
-      - PROXY_TOKEN=${PROXY_TOKEN}
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
+      - MONGO_URL=${MONGO_URL:?MONGO_URL must be set in .env}
+      - PROXY_TOKEN=${PROXY_TOKEN:?PROXY_TOKEN must be set in .env}
+      - CORS_ORIGIN=${CORS_ORIGIN:?CORS_ORIGIN must be set in .env}
     depends_on:
       mongo:
         condition: service_healthy
@@ -45,8 +45,8 @@ services:
         max-size: "10m"
         max-file: "3"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-admin}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:?MONGO_USER must be set in .env}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:?MONGO_PASSWORD must be set in .env}
     volumes:
       - mongo_data:/data/db
     healthcheck:

@@ -78,16 +78,18 @@ The frontend renders a force-directed graph on HTML Canvas using D3. Nodes are p
 ### Run with Docker Compose
 
 ```bash
-git clone https://github.com/meckgale/techRelative.git
+git clone https://github.com/meckgalen/techRelative.git
 cd techRelative
 
-# Configure your MongoDB connection
-cp backend/.env.example backend/.env
-# Edit backend/.env with your MONGO_URL
+# Configure the environment (next to docker-compose.yml)
+cp .env.example .env
+# Edit .env and replace every placeholder
 
 # Start all services
 docker compose up --build
 ```
+
+**Required keys:** `MONGO_USER`, `MONGO_PASSWORD`, `MONGO_URL`, `CORS_ORIGIN` and `PROXY_TOKEN`. There are no defaults, so `docker compose` stops with an error if any of them is missing. `backend/.env` (from `backend/.env.example`) is only used when running the backend directly with `npm run dev`.
 
 The app will be available at `http://localhost:3000`.
 
